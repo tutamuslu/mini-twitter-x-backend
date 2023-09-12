@@ -16,11 +16,13 @@ public class Comment {
     @Column(name = "id")
     private int id;
 
-    //@Column(name = "tweet_id")
-    //private Tweet tweetId;
+    @ManyToOne
+    @JoinColumn(name = "tweet_id")
+    private Tweet tweetId;
 
-    //@Column(name = "user_id")
-    //private Member userId;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private Member userId;
 
     @Column(name = "content")
     private String content;

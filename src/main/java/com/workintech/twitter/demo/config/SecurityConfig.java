@@ -82,12 +82,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> {
                     auth.requestMatchers("/profile/**").permitAll();
                     auth.requestMatchers("/tweet/**").permitAll();
-                    /*
                     auth.requestMatchers(HttpMethod.POST, "/tweet/**").hasRole("USER");
                     auth.requestMatchers(HttpMethod.PUT, "/tweet/**").hasRole("USER");
                     auth.requestMatchers(HttpMethod.DELETE, "/tweet/**").hasRole("USER");
                     auth.requestMatchers(HttpMethod.GET, "/tweet/**").hasRole("USER");
-                    */
                     auth.anyRequest().authenticated();
                 })
                 .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)

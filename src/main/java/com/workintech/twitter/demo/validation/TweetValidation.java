@@ -1,5 +1,6 @@
 package com.workintech.twitter.demo.validation;
 
+import com.workintech.twitter.demo.dto.TweetRequest;
 import com.workintech.twitter.demo.dto.TweetResponse;
 import com.workintech.twitter.demo.entity.Tweet;
 
@@ -10,11 +11,11 @@ public class TweetValidation {
         }
         return null;
     }
-    public static TweetResponse controlSave(Tweet tweet){
-        if(tweet.getContent() == null || tweet.getContent().isEmpty()){
+    public static TweetResponse controlSave(TweetRequest tweetRequest){
+        if(tweetRequest.getContent() == null || tweetRequest.getContent().isEmpty()){
             return new TweetResponse(null, false, "Tweet içeriği boş olamaz!");
         }
-        if(tweet.getTweetDate() == null){
+        if(tweetRequest.getTweetDate() == null){
             return new TweetResponse(null, false, "Tweet tarihi boş olamaz!");
         }
         return null;

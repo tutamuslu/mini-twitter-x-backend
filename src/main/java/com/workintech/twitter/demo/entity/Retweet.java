@@ -15,11 +15,13 @@ public class Retweet {
     @Column(name = "id")
     private int id;
 
-    //@Column(name = "tweet_id")
-    //private int tweetId;
+    @ManyToOne
+    @JoinColumn(name = "tweet_id")
+    private Tweet tweetId;
 
-    //@Column(name = "user_id")
-    //private int userId;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private Member userId;
 
     @Column(name = "retweet_date")
     private Date retweetDate;

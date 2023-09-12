@@ -1,5 +1,7 @@
 package com.workintech.twitter.demo.service;
 
+import com.workintech.twitter.demo.dto.CommentRequest;
+import com.workintech.twitter.demo.dto.TweetRequest;
 import com.workintech.twitter.demo.dto.TweetResponse;
 import com.workintech.twitter.demo.entity.*;
 import com.workintech.twitter.demo.repository.*;
@@ -40,16 +42,28 @@ public class TweetServiceImpl implements TweetService{
     }
 
     @Override
-    public Tweet newTweet(Tweet tweet) {
-        return tweetRepository.save(tweet);
+    public TweetResponse newTweet(TweetRequest tweetRequest) {
+
+        Optional<Member> member = memberRepository.findById(tweetRequest.getUserId());
+
+        if(!member.isPresent()){
+            return new TweetResponse(null, true, "Kullanıcı bulunamadı!!");
+        }
+
+        Tweet tweet = new Tweet();
+        tweet.setUserId(member.get());
+        tweet.setContent(tweetRequest.getContent());
+        tweet.setTweetDate(tweetRequest.getTweetDate());
+        Tweet tweet1 = tweetRepository.save(tweet);
+        return new TweetResponse(tweet1, true, "");
     }
 
     @Override
-    public TweetResponse update(int id, Tweet tweet) {
+    public TweetResponse update(int id, TweetRequest tweetRequest) {
         Optional<Tweet> tweet1 = tweetRepository.findById(id);
         if(tweet1.isPresent()){
-            tweet1.get().setContent(tweet.getContent());
-            Tweet tweet2 = tweetRepository.save(tweet);
+            tweet1.get().setContent(tweetRequest.getContent());
+            Tweet tweet2 = tweetRepository.save(tweet1.get());
             return new TweetResponse(tweet2, true, "");
         }
         else{
@@ -62,9 +76,15 @@ public class TweetServiceImpl implements TweetService{
     public TweetResponse delete(int id) {
         Optional<Tweet> tweet = tweetRepository.findById(id);
         if(tweet.isPresent()){
-            /*likeRepository.deleteByTweetId(tweet.get().getId());
-            retweetRepository.deleteByTweetId(tweet.get().getId());
-            commentRepository.deleteByTweetId(tweet.get().getId());*/
+            // likeları sil
+            List<Like> likes = likeRepository.selectByTweetId(tweet.get());
+            likeRepository.deleteAll(likes);
+            // yorumları sil
+            List<Comment> comments = commentRepository.selectByTweetId(tweet.get());
+            commentRepository.deleteAll(comments);
+            // retwetleri sil
+            List<Retweet> retweets = retweetRepository.selectByTweetId(tweet.get());
+            retweetRepository.deleteAll(retweets);
             tweetRepository.deleteById(id);
             return new TweetResponse(null , true, "");
         }
@@ -72,41 +92,112 @@ public class TweetServiceImpl implements TweetService{
     }
 
     @Override
-    public TweetResponse like(int id) {
+    public TweetResponse like(int id, int userId) {
         Optional<Tweet> tweet = tweetRepository.findById(id);
         if(tweet.isPresent()){
-            Optional<Member> member = memberRepository.findById(1);//tweet.get().getTweetUserId());
-            if(member.isPresent()){
-                Like newLike = new Like();
-                newLike.setLikeDate(new Date());
-                //newLike.setUserId(member.get());
-                Like like = likeRepository.save(newLike);
-                tweet.get().setLikeCount(tweet.get().getLikeCount() + 1);
-                tweetRepository.save(tweet.get());
-                return new TweetResponse(tweet.get(), true, "");
+            Optional<Member> member = memberRepository.findById(userId);
+            Optional<Like> like = likeRepository.selectLikeByUserAndTweet(tweet.get(), member.get());
+            // gönderiyi bu kullanıcı beğmemişse devam etmeli
+            if(!like.isPresent()){
+                if(member.isPresent()){
+                    Like newLike = new Like();
+                    newLike.setLikeDate(new Date());
+                    newLike.setUserId(member.get());
+                    newLike.setTweetId(tweet.get());
+                    likeRepository.save(newLike);
+                    tweet.get().setLikeCount(tweet.get().getLikeCount() + 1);
+                    tweetRepository.save(tweet.get());
+                    return new TweetResponse(tweet.get(), true, "");
+                }else{
+                    return new TweetResponse(null, false, "Kullanıcı bulunamadı!!");
+                }
+            }
+            else{
+                return new TweetResponse(null, false, "Bu tweeti zaten beğendin !");
             }
 
+        }
+        return new TweetResponse(null, false, "Tweet beğenilemedi!");
+    }
+
+    @Override
+    public TweetResponse disLike(int id, int userId) {
+
+        Optional<Tweet> tweet = tweetRepository.findById(id);
+        if(tweet.isPresent()){
+            Optional<Member> member = memberRepository.findById(userId);
+            Optional<Like> like = likeRepository.selectLikeByUserAndTweet(tweet.get(), member.get());
+            if(like.isPresent()){
+                likeRepository.delete(like.get());
+                tweet.get().setLikeCount(tweet.get().getLikeCount() - 1);
+                tweetRepository.save(tweet.get());
+                return new TweetResponse(tweet.get(), true, "");
+            }else {
+                return new TweetResponse(null, false, "Like bulunamadı!!");
+            }
         }
         return new TweetResponse(null, false, "Tweet silinemedi!");
     }
 
     @Override
-    public TweetResponse unLike(int id) {
-        return null;
+    public TweetResponse retweet(int id, int userId) {
+        Optional<Tweet> tweet = tweetRepository.findById(id);
+        if(!tweet.isPresent()) {
+        return new TweetResponse(null, false, "Tweet bulunamadı!");
+        }
+        Optional<Member> member = memberRepository.findById(userId);
+        if(!member.isPresent())
+        {
+            return new TweetResponse(null, false, "Kullanıcı bulunamadı!");
+        }
+
+        Retweet retweet = new Retweet();
+        retweet.setRetweetDate(new Date());
+        retweet.setUserId(member.get());
+        retweet.setTweetId(tweet.get());
+
+        retweetRepository.save(retweet);
+        return new TweetResponse(tweet.get(), true, "");
     }
 
     @Override
-    public TweetResponse retweet(int id) {
-        return null;
+    public TweetResponse newComment(int id, CommentRequest commentRequest) {
+        Optional<Tweet> tweet = tweetRepository.findById(id);
+        if(!tweet.isPresent()){
+            return new TweetResponse(null, true, "Tweet bulunamadı!");
+        }
+        Optional<Member> member = memberRepository.findById(commentRequest.getUserId());
+        if(!member.isPresent())
+        {
+            return new TweetResponse(null, false, "Kullanıcı bulunamadı!");
+        }
+        Comment comment = new Comment();
+        comment.setUserId(member.get());
+        comment.setCommentDate(new Date());
+        comment.setContent(commentRequest.getComment());
+        comment.setTweetId(tweet.get());
+        commentRepository.save(comment);
+
+        return new TweetResponse(tweet.get(), true, "");
     }
 
     @Override
-    public TweetResponse newComment(int id, Comment comment) {
-        return null;
-    }
-
-    @Override
-    public TweetResponse deleteComment(int id) {
-        return null;
+    public TweetResponse deleteComment(int id, CommentRequest commentRequest) {
+        Optional<Tweet> tweet = tweetRepository.findById(id);
+        if(!tweet.isPresent()){
+            return new TweetResponse(null, true, "Tweet bulunamadı!");
+        }
+        Optional<Member> member = memberRepository.findById(commentRequest.getUserId());
+        if(!member.isPresent())
+        {
+            return new TweetResponse(null, false, "Kullanıcı bulunamadı!");
+        }
+        Optional<Comment> comment = commentRepository.findById(id);
+        if(!comment.isPresent())
+        {
+            return new TweetResponse(null, false, "Yorum bulunamadı!");
+        }
+        commentRepository.delete(comment.get());
+        return new TweetResponse(tweet.get(), true, "");
     }
 }

@@ -1,9 +1,12 @@
 package com.workintech.twitter.demo.controller;
 
+import com.workintech.twitter.demo.dto.CommentRequest;
+import com.workintech.twitter.demo.dto.TweetRequest;
 import com.workintech.twitter.demo.dto.TweetResponse;
 import com.workintech.twitter.demo.entity.Comment;
 import com.workintech.twitter.demo.entity.Tweet;
 import com.workintech.twitter.demo.service.TweetService;
+import com.workintech.twitter.demo.validation.CommentValidation;
 import com.workintech.twitter.demo.validation.TweetValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -40,26 +43,25 @@ public class TweetController {
     }
 
     @PostMapping("/")
-    public TweetResponse add(@RequestBody Tweet tweet){
-        TweetResponse validate = TweetValidation.controlSave(tweet);
+    public TweetResponse add(@RequestBody TweetRequest tweetRequest){
+        TweetResponse validate = TweetValidation.controlSave(tweetRequest);
         if(validate != null){
             return validate;
         }
-        Tweet tweet1 = tweetService.newTweet(tweet);
-        if(tweet1 != null){
-            return new TweetResponse(tweet1, true, "");
-        }else{
-            return new TweetResponse(null, false, "Tweet eklenemedi!!");
-        }
+        TweetResponse tweetResponse = tweetService.newTweet(tweetRequest);
+        return tweetResponse;
     }
 
     @PutMapping("/{id}")
-    public TweetResponse update(@PathVariable int id, @RequestBody Tweet tweet){
-        TweetResponse idValidation = TweetValidation.controlId(id);
-        if(idValidation != null){
-            return idValidation;
+    public TweetResponse update(@PathVariable int id, @RequestBody TweetRequest tweetRequest){
+        TweetResponse validate = TweetValidation.controlSave(tweetRequest);
+        if(validate != null){
+            return validate;
         }
-        return null;
+
+        TweetResponse tweetResponse = tweetService.update(id, tweetRequest);
+
+        return tweetResponse;
     }
 
     @DeleteMapping("/{id}")
@@ -73,27 +75,56 @@ public class TweetController {
     }
 
     @PostMapping("/like/{id}")
-    public void like(@PathVariable int id){
+    public TweetResponse like(@PathVariable int id, @RequestBody TweetRequest tweetRequest){
+        TweetResponse idValidation = TweetValidation.controlId(id);
+        if(idValidation != null){
+            return idValidation;
+        }
 
+        return tweetService.like(id, tweetRequest.getUserId());
     }
 
     @DeleteMapping("/like/{id}")
-    public void unLike(@PathVariable int id){
+    public TweetResponse disLike(@PathVariable int id, @RequestBody TweetRequest tweetRequest){
+        TweetResponse idValidation = TweetValidation.controlId(id);
+        if(idValidation != null){
+            return idValidation;
+        }
 
+        return tweetService.disLike(id, tweetRequest.getUserId());
     }
 
     @PostMapping("/retweet/{id}")
-    public void retweet(@PathVariable int id){
-
+    public TweetResponse retweet(@PathVariable int id, @RequestBody TweetRequest tweetRequest){
+        TweetResponse idValidation = TweetValidation.controlId(id);
+        if(idValidation != null){
+            return idValidation;
+        }
+        TweetResponse idValidation2 = TweetValidation.controlId(tweetRequest.getUserId());
+        if(idValidation2 != null){
+            return idValidation2;
+        }
+        TweetResponse tweetResponse = tweetService.retweet(id, tweetRequest.getUserId());
+        return tweetResponse;
     }
 
     @PostMapping("/reply/{id}")
-    public void addComment(@PathVariable int id, Comment comment){
-
+    public TweetResponse addComment(@PathVariable int id, CommentRequest commentRequest){
+        TweetResponse idValidation = CommentValidation.checkAddComment(commentRequest);
+        if(idValidation != null){
+            return idValidation;
+        }
+        TweetResponse tweetResponse = tweetService.newComment(id, commentRequest);
+        return tweetResponse;
     }
 
     @DeleteMapping("/reply/{id}")
-    public void deleteComment(@PathVariable int id){
-
+    public TweetResponse deleteComment(@PathVariable int id, CommentRequest commentRequest){
+        TweetResponse idValidation = CommentValidation.checkDeleteComment(commentRequest);
+        if(idValidation != null){
+            return idValidation;
+        }
+        TweetResponse tweetResponse = tweetService.deleteComment(id, commentRequest);
+        return tweetResponse;
     }
 }
