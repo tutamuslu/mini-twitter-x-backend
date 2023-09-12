@@ -105,6 +105,7 @@ public class TweetServiceImpl implements TweetService{
                     newLike.setUserId(member.get());
                     newLike.setTweetId(tweet.get());
                     likeRepository.save(newLike);
+                    // yorum sayısını arttırdım
                     tweet.get().setLikeCount(tweet.get().getLikeCount() + 1);
                     tweetRepository.save(tweet.get());
                     return new TweetResponse(tweet.get(), true, "");
@@ -129,6 +130,7 @@ public class TweetServiceImpl implements TweetService{
             Optional<Like> like = likeRepository.selectLikeByUserAndTweet(tweet.get(), member.get());
             if(like.isPresent()){
                 likeRepository.delete(like.get());
+                // uorum sayısını azalttım
                 tweet.get().setLikeCount(tweet.get().getLikeCount() - 1);
                 tweetRepository.save(tweet.get());
                 return new TweetResponse(tweet.get(), true, "");
@@ -157,6 +159,11 @@ public class TweetServiceImpl implements TweetService{
         retweet.setTweetId(tweet.get());
 
         retweetRepository.save(retweet);
+
+        // retweet sayısını arttırdım
+        tweet.get().setRetweetCount(tweet.get().getRetweetCount() + 1);
+        tweetRepository.save(tweet.get());
+
         return new TweetResponse(tweet.get(), true, "");
     }
 
@@ -178,6 +185,10 @@ public class TweetServiceImpl implements TweetService{
         comment.setTweetId(tweet.get());
         commentRepository.save(comment);
 
+        // yorum saysıını arttırdım
+        tweet.get().setCommentCount(tweet.get().getCommentCount() + 1);
+        tweetRepository.save(tweet.get());
+
         return new TweetResponse(tweet.get(), true, "");
     }
 
@@ -198,6 +209,11 @@ public class TweetServiceImpl implements TweetService{
             return new TweetResponse(null, false, "Yorum bulunamadı!");
         }
         commentRepository.delete(comment.get());
+
+        // yorum saysıını azalttım
+        tweet.get().setCommentCount(tweet.get().getCommentCount() - 1);
+        tweetRepository.save(tweet.get());
+
         return new TweetResponse(tweet.get(), true, "");
     }
 }

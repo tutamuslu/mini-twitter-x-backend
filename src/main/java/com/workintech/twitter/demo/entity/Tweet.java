@@ -30,6 +30,9 @@ public class Tweet {
     @Column(name = "retweet_count")
     private int retweetCount;
 
+    @Column(name = "comment_count")
+    private int commentCount;
+
     @Column(name = "tweet_date")
     private Date tweetDate;
 
