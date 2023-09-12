@@ -16,6 +16,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/tweet")
+@CrossOrigin(origins = "http://localhost:3000")
 public class TweetController {
 
     private TweetService tweetService;
@@ -109,7 +110,7 @@ public class TweetController {
     }
 
     @PostMapping("/reply/{id}")
-    public TweetResponse addComment(@PathVariable int id, CommentRequest commentRequest){
+    public TweetResponse addComment(@PathVariable int id, @RequestBody CommentRequest commentRequest){
         TweetResponse idValidation = CommentValidation.checkAddComment(commentRequest);
         if(idValidation != null){
             return idValidation;
@@ -119,7 +120,7 @@ public class TweetController {
     }
 
     @DeleteMapping("/reply/{id}")
-    public TweetResponse deleteComment(@PathVariable int id, CommentRequest commentRequest){
+    public TweetResponse deleteComment(@PathVariable int id, @RequestBody CommentRequest commentRequest){
         TweetResponse idValidation = CommentValidation.checkDeleteComment(commentRequest);
         if(idValidation != null){
             return idValidation;

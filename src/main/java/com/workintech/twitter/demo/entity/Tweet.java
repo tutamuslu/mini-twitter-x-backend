@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -35,5 +36,11 @@ public class Tweet {
 
     @Column(name = "tweet_date")
     private Date tweetDate;
+
+    @OneToMany(mappedBy = "tweetId")
+    private Set<Like> likes;
+
+    @OneToMany(mappedBy = "tweetId")
+    private Set<Comment> comments;
 
 }
