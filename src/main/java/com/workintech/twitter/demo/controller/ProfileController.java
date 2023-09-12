@@ -3,7 +3,7 @@ package com.workintech.twitter.demo.controller;
 import com.workintech.twitter.demo.dto.LoginRequest;
 import com.workintech.twitter.demo.dto.LoginResponse;
 import com.workintech.twitter.demo.dto.RegisterResponse;
-import com.workintech.twitter.demo.entity.User;
+import com.workintech.twitter.demo.entity.Member;
 import com.workintech.twitter.demo.service.ProfileService;
 import com.workintech.twitter.demo.validation.ProfileValidation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,21 +26,21 @@ public class ProfileController {
     }
 
     @PostMapping("/register")
-    public RegisterResponse register(@RequestBody User user){
+    public RegisterResponse register(@RequestBody Member member){
         // genel validasyon
-        RegisterResponse validation = ProfileValidation.validateRegister(user);
+        RegisterResponse validation = ProfileValidation.validateRegister(member);
         if(validation != null){
             return validation;
         }
         // kullanıcı adı daha önce kullanılmış mı?
-        String deneme = user.getUsername();
-        Optional<User> isRegistered = profileService.findByUserName(deneme);
+        String deneme = member.getUsername();
+        Optional<Member> isRegistered = profileService.findByUserName(deneme);
         if(isRegistered.isPresent()){
             return new RegisterResponse(null, false, "Kullanıcı adı zaten kullanılmaktadır!");
         }
-        user.setRegisterDate(new Date());
-        profileService.register(user);
-        return new RegisterResponse(user, true, "");
+        member.setRegisterDate(new Date());
+        profileService.register(member);
+        return new RegisterResponse(member, true, "");
     }
 
     @PostMapping("/logout")
@@ -54,14 +54,13 @@ public class ProfileController {
         if(validate != null){
             return validate;
         }
-        Optional<User> user = profileService.findByUserName(loginRequest.getUser());
-        if(!user.isPresent()){
-            return new LoginResponse("", false, "Kullanıcı sistemde bulunamadı!");
+
+        Optional<Member> member = profileService.findByUserName(loginRequest.getUser());
+        if(!member.isPresent()){
+            return new LoginResponse("", null, false, "Kullanıcı sistemde bulunamadı!");
         }
-        User loginUser = profileService.login(loginRequest.getUser(), loginRequest.getPassword());
-        if(loginUser == null){
-            return  new LoginResponse("", false, "Kullanıcı adı veya şifre yanlış girildi!");
-        }
-        return new LoginResponse("asdsad", true, "");
+
+        LoginResponse loginResponse = profileService.login(loginRequest.getUser(), loginRequest.getPassword());
+        return loginResponse;
     }
 }

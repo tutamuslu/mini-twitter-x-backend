@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Data
 @NoArgsConstructor
 @Entity
@@ -13,4 +15,13 @@ public class Like {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private int id;
+
+    //@Column(name = "tweet_id")
+    //private Tweet tweetId;
+
+    //@Column(name = "user_id")
+    //private Member userId;
+
+    @Column(name = "like_date")
+    private Date likeDate;
 }

@@ -15,9 +15,11 @@ public class Retweet {
     @Column(name = "id")
     private int id;
 
-    private int tweetId;
+    //@Column(name = "tweet_id")
+    //private int tweetId;
 
-    private int userId;
+    //@Column(name = "user_id")
+    //private int userId;
 
     @Column(name = "retweet_date")
     private Date retweetDate;

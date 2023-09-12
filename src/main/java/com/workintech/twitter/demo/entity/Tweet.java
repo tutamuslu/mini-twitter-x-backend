@@ -28,4 +28,5 @@ public class Tweet {
 
     @Column(name = "tweet_date")
     private Date tweetDate;
+
 }

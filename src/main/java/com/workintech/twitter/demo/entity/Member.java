@@ -13,8 +13,8 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @Entity
-@Table(name = "user", schema = "twitter_app")
-public class User implements UserDetails
+@Table(name = "member", schema = "twitter_app")
+public class Member implements UserDetails
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,14 +39,18 @@ public class User implements UserDetails
     @Column(name = "register_date")
     private Date registerDate;
 
+    @Column(name = "birth_date")
+    private Date birthDate;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_role", schema = "twitter_app",
             joinColumns = {@JoinColumn(name = "user_id")},
             inverseJoinColumns = {@JoinColumn(name = "role_id")})
     private Set<Role> authorities;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        return authorities;
     }
 
     @Override

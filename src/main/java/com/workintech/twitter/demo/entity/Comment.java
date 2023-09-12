@@ -16,9 +16,11 @@ public class Comment {
     @Column(name = "id")
     private int id;
 
-    private int tweetId;
+    //@Column(name = "tweet_id")
+    //private Tweet tweetId;
 
-    private int userId;
+    //@Column(name = "user_id")
+    //private Member userId;
 
     @Column(name = "content")
     private String content;
