@@ -7,10 +7,7 @@ import com.workintech.twitter.demo.entity.Member;
 import com.workintech.twitter.demo.service.ProfileService;
 import com.workintech.twitter.demo.validation.ProfileValidation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.Optional;
@@ -44,8 +41,8 @@ public class ProfileController {
     }
 
     @PostMapping("/logout")
-    public void logout(){
-
+    public boolean logout(){
+        return true;
     }
 
     @PostMapping("/login")

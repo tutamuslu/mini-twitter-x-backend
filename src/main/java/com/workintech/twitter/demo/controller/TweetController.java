@@ -3,7 +3,6 @@ package com.workintech.twitter.demo.controller;
 import com.workintech.twitter.demo.dto.CommentRequest;
 import com.workintech.twitter.demo.dto.TweetRequest;
 import com.workintech.twitter.demo.dto.TweetResponse;
-import com.workintech.twitter.demo.entity.Comment;
 import com.workintech.twitter.demo.entity.Tweet;
 import com.workintech.twitter.demo.service.TweetService;
 import com.workintech.twitter.demo.validation.CommentValidation;
@@ -16,7 +15,6 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/tweet")
-@CrossOrigin(origins = "http://localhost:3000")
 public class TweetController {
 
     private TweetService tweetService;

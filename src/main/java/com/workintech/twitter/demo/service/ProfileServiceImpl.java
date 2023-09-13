@@ -72,7 +72,7 @@ public class ProfileServiceImpl implements ProfileService {
 
             return new LoginResponse(token, user.get(), true, "");
         }catch (Exception ex){
-            return new LoginResponse("", null, false, ex.getMessage());
+            return new LoginResponse("", null, false, "Kullanıcı adı veya şifre yanlış!!");
         }
     }
 
