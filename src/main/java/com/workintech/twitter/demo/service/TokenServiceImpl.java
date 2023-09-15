@@ -13,12 +13,12 @@ import java.time.temporal.ChronoUnit;
 import java.util.stream.Collectors;
 
 @Service
-public class TokenService {
+public class TokenServiceImpl {
 
     private JwtEncoder jwtEncoder;
 
     @Autowired
-    public TokenService(JwtEncoder jwtEncoder){
+    public TokenServiceImpl(JwtEncoder jwtEncoder){
         this.jwtEncoder = jwtEncoder;
     }
 

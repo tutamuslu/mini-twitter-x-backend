@@ -21,9 +21,9 @@ public class ProfileServiceImpl implements ProfileService {
     private RoleRepository roleRepository;
     private PasswordEncoder passwordEncoder;
     private AuthenticationManager authenticationManager;
-    private TokenService tokenService;
+    private TokenServiceImpl tokenService;
     @Autowired
-    public ProfileServiceImpl(MemberRepository memberRepository,  RoleRepository roleRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, TokenService tokenService){
+    public ProfileServiceImpl(MemberRepository memberRepository,  RoleRepository roleRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, TokenServiceImpl tokenService){
         this.memberRepository = memberRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
